@@ -108,8 +108,9 @@ public class Block implements Serializable {
     }
 
     public String getData() {
+        if (data.isEmpty()) return "no messages";
         StringBuilder sb = new StringBuilder();
-        data.forEach(sb::append);
+        data.forEach((bytes -> sb.append(new String(bytes)).append("\n")));
         return sb.toString();
     }
 

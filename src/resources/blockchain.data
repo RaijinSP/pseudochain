@@ -1,2 +1,2 @@
-path = %PATH%
-keypath = %PATH%
+path=%set your target blockchain file path here%
+keypath=%set your private key path here%

@@ -16,11 +16,20 @@ public class Message {
     public static final int ENCRYPTED = 1;
     private static final String ALGRTHM = "SHA1withRSA";
 
+    private static long lastId = -1;
+
     private final long id;
+
     private final List<byte[]> list;
 
-    Message(long id, String message, String keyFile) throws InvalidKeyException, Exception {
-        this.id = id;
+    Message(String message, String keyFile) throws InvalidKeyException, Exception {
+        if (lastId == -1) {
+            this.id = 1;
+            lastId = this.id;
+        } else {
+            this.id = lastId + 1;
+            lastId = this.id;
+        }
         list = new ArrayList<>();
 
         list.add(message.getBytes());
@@ -61,4 +70,17 @@ public class Message {
         return factory.generatePrivate(spec);
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Message)) return false;
+
+        Message m = (Message) obj;
+
+        return m.getId() == id && m.getMessage().equals(list);
+    }
+
+    @Override
+    public String toString() {
+        return new String(list.get(ORIGINAL));
+    }
 }

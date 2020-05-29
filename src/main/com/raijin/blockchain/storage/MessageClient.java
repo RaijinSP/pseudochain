@@ -21,8 +21,7 @@ public class MessageClient {
     protected void addMessage(String message) {
         try {
             Message m = MessageFactory.create(author.getName() + ": " + message, author.getKeyPath());
-            if (m.getId() == messages.size())
-                messages.add(m);
+            messages.add(m);
         } catch (Exception x) {
             System.err.println("Unable to create message...");
         }
@@ -50,5 +49,12 @@ public class MessageClient {
 
     public List<Message> getMessages() {
         return this.messages;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof MessageClient)) return false;
+
+        return ((MessageClient) obj).getAuthor().equals(this.author);
     }
 }

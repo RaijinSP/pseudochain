@@ -5,7 +5,6 @@ import com.raijin.blockchain.messaging.Message;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -14,8 +13,6 @@ public class Blockchain {
     private static long lastBlockId;
 
     private static long nextBlockId;
-
-    private static AtomicLong lastMessageId;
 
     private static final BlockReader READER = new BlockReader();
 
@@ -29,10 +26,13 @@ public class Blockchain {
         return INSTANCE;
     }
 
+    private static boolean validateHash(String rhash, String lhash) {
+        return rhash.equals(lhash);
+    }
+
     private Blockchain() {
         lastBlockId = 1;
         nextBlockId = 1;
-        lastMessageId = new AtomicLong(0L);
         //tryReadExisting();
     }
 
@@ -73,6 +73,7 @@ public class Blockchain {
         b.calcZeros(b.getGenerationTime()/1_000_000);
         lastBlockId = nextBlockId;
         nextBlockId++;
+        clearAllMessages();
 //        try {
 //            writeNewBlock(b);
 //        } catch (Exception ignored) {
@@ -107,15 +108,17 @@ public class Blockchain {
     }
 
     public MessageClient createClient(Author author) {
-        return new MessageClient(author);
-    }
-
-    private static boolean validateHash(String rhash, String lhash) {
-        return rhash.equals(lhash);
+        MessageClient cli = new MessageClient(author);
+        activeClients.add(cli);
+        return cli;
     }
 
     private void verifySignature() {
         activeClients.forEach(MessageClient::verify);
+    }
+
+    private void clearAllMessages() {
+        activeClients.forEach(MessageClient::clear);
     }
 
     private List<byte[]> obtainBytesFromMessages() {
@@ -124,4 +127,5 @@ public class Blockchain {
                 .map(m -> m.getMessage().get(Message.ORIGINAL))
                 .collect(Collectors.toList());
     }
+
 }

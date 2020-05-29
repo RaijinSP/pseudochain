@@ -28,4 +28,14 @@ public class Author {
         return this.pk;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Author)) return false;
+
+        Author author = (Author) obj;
+
+        return this.name.equals(author.getName()) &&
+               this.keyPath.equals(author.getKeyPath()) &&
+               this.pk.equals(author.getPk());
+    }
 }
