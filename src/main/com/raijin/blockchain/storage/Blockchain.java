@@ -1,10 +1,11 @@
 package com.raijin.blockchain.storage;
 
-import com.raijin.blockchain.messaging.Author;
 import com.raijin.blockchain.messaging.Message;
+import com.raijin.blockchain.transactions.Client;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -20,7 +21,7 @@ public class Blockchain {
 
     private final Map<Long, Block> blocks = new LinkedHashMap<>();
 
-    private final Set<MessageClient> activeClients = new HashSet<>();
+    private final Map<Client, MessageClient> activeClients = new ConcurrentHashMap<>();
 
     public static Blockchain getInstance() {
         return INSTANCE;
@@ -62,18 +63,23 @@ public class Blockchain {
 
     public Block create() {
         String prevHash = blocks.isEmpty() ? "0" : blocks.get(lastBlockId).getHash();
-        return new Block(nextBlockId, prevHash);
+        return new Block(prevHash);
     }
 
     public synchronized void add(Block b) {
         //System.out.printf("THread %s adding block with id %d\n", Thread.currentThread().getName(), nextBlockId);
-        verifySignature();
-        b.setData(obtainBytesFromMessages());
+        Set<MessageClient> currentClients = new HashSet<>(activeClients.values());
+
+        b.setData(obtainBytesFromMessages(verifySignature(currentClients)));
+        b.setId(nextBlockId);
+        b.calcZeros(b.getGenerationTime() / 1_000_000);
+
         blocks.put(nextBlockId, b);
-        b.calcZeros(b.getGenerationTime()/1_000_000);
         lastBlockId = nextBlockId;
         nextBlockId++;
-        clearAllMessages();
+
+        //System.out.printf("Thread %s exiting...\n", Thread.currentThread().getName());
+        //IOUtils.printBlockState(b);
 //        try {
 //            writeNewBlock(b);
 //        } catch (Exception ignored) {
@@ -102,30 +108,21 @@ public class Blockchain {
         return b.getPrevHash().equals(prevHash);
     }
 
-    public void addMessage(MessageClient cli, String message) {
-        if (cli != null)
-            cli.addMessage(message);
+    public void addMessage(Client author, String message) {
+        Objects.requireNonNull(activeClients.get(author)).addMessage(message);
     }
 
-    public MessageClient createClient(Author author) {
+    public void createClient(Client author) {
         MessageClient cli = new MessageClient(author);
-        activeClients.add(cli);
-        return cli;
+        activeClients.put(author, cli);
     }
 
-    private void verifySignature() {
-        activeClients.forEach(MessageClient::verify);
+    private List<Message> verifySignature(Set<MessageClient> currentClients) {
+        return currentClients.stream().flatMap(cli -> cli.verifyAndClear().stream()).collect(Collectors.toList());
     }
 
-    private void clearAllMessages() {
-        activeClients.forEach(MessageClient::clear);
-    }
-
-    private List<byte[]> obtainBytesFromMessages() {
-        return activeClients.stream()
-                .flatMap(cli -> cli.getMessages().stream())
-                .map(m -> m.getMessage().get(Message.ORIGINAL))
+    private List<byte[]> obtainBytesFromMessages(List<Message> messages) {
+        return messages.stream().map(m -> m.getMessage().get(Message.ORIGINAL))
                 .collect(Collectors.toList());
     }
-
 }

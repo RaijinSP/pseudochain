@@ -41,10 +41,12 @@ public class BlockReader {
     }
 
     public Set<Block> read(String path) throws Exception {
-
+        Boolean b = new Boolean("T");
         String[] blockExpr = new String(Files.readAllBytes(Paths.get(path))).split("\n");
 
         Set<Block> blockSet = new LinkedHashSet<>();
+
+
 
         for (String blockStr: blockExpr) {
 
@@ -82,7 +84,7 @@ public class BlockReader {
                 throw new Exception("Unable to read blockchain from file, creating a new one...");
             }
 
-            blockSet.add(new Block(id, minerId, timeStamp, generationTime, prevHash, hash, magic, null, zeros));
+            //blockSet.add(new Block(id, minerId, timeStamp, generationTime, prevHash, hash, magic, data, zeros));
         }
 
         return blockSet;

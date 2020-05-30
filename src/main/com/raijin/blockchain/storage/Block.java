@@ -6,11 +6,12 @@ import java.util.*;
 
 import static com.raijin.blockchain.utils.HashUtils.applySha256;
 
+
 public class Block implements Serializable {
 
     private static final long serialVersionUID = -1512361671436L;
 
-    private final long id;
+    private long id;
 
     private static int zeros = 0;
 
@@ -57,10 +58,9 @@ public class Block implements Serializable {
         Block.zeros = zeros;
     }
 
-    public Block(long id, String prevHash) {
+    public Block(String prevHash) {
         long start = System.nanoTime();
         this.minerId = Thread.currentThread().getId();
-        this.id = id;
         this.timeStamp = new Date().getTime();
         this.prevHash = prevHash;
         hash(zeros);
@@ -108,10 +108,14 @@ public class Block implements Serializable {
     }
 
     public String getData() {
-        if (data.isEmpty()) return "no messages";
+        if (data.isEmpty()) return "no messages\n";
         StringBuilder sb = new StringBuilder();
         data.forEach((bytes -> sb.append(new String(bytes)).append("\n")));
         return sb.toString();
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public void setData(List<byte[]> messages) {

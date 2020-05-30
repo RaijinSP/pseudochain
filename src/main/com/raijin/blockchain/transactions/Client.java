@@ -1,8 +1,8 @@
-package com.raijin.blockchain.messaging;
+package com.raijin.blockchain.transactions;
 
 import java.security.PublicKey;
 
-public class Author {
+public class Client {
 
     private final String name;
 
@@ -10,10 +10,13 @@ public class Author {
 
     private final PublicKey pk;
 
-    Author(String name, PublicKey pk, String keyPath) {
+    private final Balance balance;
+
+    Client(String name, PublicKey pk, String keyPath) {
         this.name = name;
         this.pk = pk;
         this.keyPath = keyPath;
+        this.balance = new VirtualCoinBalance();
     }
 
     public String getName() {
@@ -28,14 +31,16 @@ public class Author {
         return this.pk;
     }
 
+    public Balance getBalance() {
+        return this.balance;
+    }
+
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof Author)) return false;
+        if (!(obj instanceof Client)) return false;
 
-        Author author = (Author) obj;
+        Client a = (Client) obj;
 
-        return this.name.equals(author.getName()) &&
-               this.keyPath.equals(author.getKeyPath()) &&
-               this.pk.equals(author.getPk());
+        return a.getName().equals(this.name);
     }
 }

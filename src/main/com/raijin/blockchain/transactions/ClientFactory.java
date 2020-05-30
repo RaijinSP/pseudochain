@@ -1,7 +1,4 @@
-package com.raijin.blockchain.messaging;
-
-import com.raijin.blockchain.ObjFactory;
-import com.raijin.blockchain.configutils.Inject;
+package com.raijin.blockchain.transactions;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -10,21 +7,23 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
+import java.util.HashSet;
+import java.util.Set;
 
-public class AuthorFactory {
+public class ClientFactory {
 
-    private static final AuthorFactory factory = ObjFactory.createObject(AuthorFactory.class);
-
-    @Inject("keypath")
-    private String keyPathBase;
+    private static final String keyPathBase = "C:\\Users\\raiji\\OneDrive\\Рабочий стол\\blockchain\\";
+    private static final ClientFactory factory = new ClientFactory();
 
     private final KeyPairGenerator generator;
 
-    public static AuthorFactory getFactory() {
+    private final Set<Client> authors = new HashSet<>();
+
+    public static ClientFactory getFactory() {
         return factory;
     }
 
-    private AuthorFactory() {
+    private ClientFactory() {
         try {
             this.generator = KeyPairGenerator.getInstance("RSA");
             this.generator.initialize(512);
@@ -33,7 +32,7 @@ public class AuthorFactory {
         }
     }
 
-    public Author create(String username) throws IOException {
+    public Client create(String username) throws IOException {
 
         KeyPair pair = generator.generateKeyPair();
         PrivateKey privateKey = pair.getPrivate();
@@ -41,8 +40,12 @@ public class AuthorFactory {
         String keyPath = keyPathBase + username + ".key";
 
         writeKeyToFile(keyPath, privateKey.getEncoded());
-
-        return new Author(username, pair.getPublic(), keyPath);
+        Client created = new Client(username, pair.getPublic(), keyPath);
+        if (authors.add(created)) {
+            return created;
+        }
+        System.err.println("Unable to add author - already exists!");
+        return null;
     }
 
     private void writeKeyToFile(String path, byte[] key) throws IOException {
