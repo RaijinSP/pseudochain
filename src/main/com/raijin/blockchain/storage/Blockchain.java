@@ -123,7 +123,7 @@ public class Blockchain {
         try {
             mc.performTransaction(receiver, new VirtualCoin(quantity));
         } catch (TransactionException e) {
-            System.err.println("Unable to perform transaction...");
+            System.err.println(e.getMessage());
         }
     }
 

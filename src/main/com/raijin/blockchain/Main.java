@@ -38,7 +38,7 @@ public class Main {
         String command;
         while (!(command = scanner.nextLine()).contains("exit")) {
 
-            handler(command.toLowerCase());
+            handler(command.toLowerCase().trim());
 
         }
 
@@ -58,22 +58,25 @@ public class Main {
     }
 
     static void handler(String line) {
-        if (line.trim().equals("clients"))
+        if (line.equals("clients"))
             infoHandler();
-        if (line.contains("create"))
+        else if (line.startsWith("create"))
             createHandler(line);
-        if (line.contains("transaction"))
+        else if (line.startsWith("transaction"))
             transactionHandler(line);
-        if (line.contains("remove"))
+        else if (line.startsWith("remove"))
             removeHandler(line);
-        if (line.trim().equals("run"))
+        else if (line.equals("run"))
             runHandler();
-        if (line.startsWith("balance"))
+        else if (line.startsWith("balance"))
             balanceHandler(line);
-        if (line.trim().equals("help"))
+        else if (line.equals("help"))
             helpInfo();
-        if (line.trim().equals("blocks"))
+        else if (line.equals("blocks"))
             bc.blockchain().forEach(IOUtils::printBlockState);
+        else
+            System.err.println("Unknown input");
+
     }
 
     static void helpInfo() {
@@ -129,7 +132,7 @@ public class Main {
         if (line.contains("default")) {
             String[] commandsChain = line.split(" ");
             try {
-                miners.add(new Miner(bc, Integer.parseInt(commandsChain[3])));
+                handleMiner(new Miner(bc, Integer.parseInt(commandsChain[3])));
             } catch (IOException | NumberFormatException exception) {
                 System.err.println("Invalid number of blocks: " + commandsChain[3]);
                 return;
@@ -148,7 +151,7 @@ public class Main {
                 bc.createClient(cli);
                 clients.put(clientName, cli);
 
-                miners.add(new Miner(bc, blockNum, cli));
+                handleMiner(new Miner(bc, blockNum, cli));
 
             } catch (NumberFormatException x) {
                 System.err.println("Invalid number of blocks: " + commandsChain[3]);
@@ -160,6 +163,11 @@ public class Main {
         }
         System.out.println("Command executed successfully");
 
+    }
+
+    static void handleMiner(Miner miner) {
+        miners.add(miner);
+        if (isRunning) service.submit(miner);
     }
 
     static void clientHandler(String line) {

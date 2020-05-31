@@ -44,19 +44,11 @@ public class MessageClient {
         return current;
     }
 
-    public Client getClient() {
-        return this.client;
-    }
-
-    public List<Message> getMessages() {
-        return this.messages;
-    }
-
     synchronized void performTransaction(Client receiver, Coin coin) throws TransactionException {
 
         Transaction transaction = TransactionManager.MANAGER.manageTransaction(client, receiver, coin);
 
-        if (transaction == null) throw new TransactionException(String.format("Unable to perform transaction: low balance - + %d!", client.getBalance().getBalance().quantity()));
+        if (transaction == null) throw new TransactionException(String.format("Unable to perform transaction: low balance - %d, required %d!", client.getBalance().getBalance().quantity(), coin.quantity()));
         try {
             Message message = MessageFactory.create(transaction, client.getKeyPath());
             messages.add(message);
@@ -64,7 +56,7 @@ public class MessageClient {
             System.out.println(new String(message.getMessage().get(Message.ORIGINAL)));
         } catch (Exception x) {
             //TODO - enable transaction cancellation if we came here
-            System.err.println("Unable to create message for transaction...");
+            System.err.println("Unable to create message for transaction..." + x.getMessage());
         }
     }
 
