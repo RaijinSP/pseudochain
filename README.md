@@ -8,4 +8,6 @@ the goal is to provide API to create clients using http(s) protocol and identify
 
 each client should be able to mine blocks, which will store data about transactions, as well as perform transactions between clients
 
+just run main method and follow instructions
+
 no spring
