@@ -129,7 +129,7 @@ public class Main {
     }
 
     static void minerHandler(String line) {
-        if (line.contains("default")) {
+        if (line.contains("default miner")) {
             String[] commandsChain = line.split(" ");
             try {
                 handleMiner(new Miner(bc, Integer.parseInt(commandsChain[3])));
@@ -137,7 +137,7 @@ public class Main {
                 System.err.println("Invalid number of blocks: " + commandsChain[3]);
                 return;
             }
-        } else {
+        } else if (line.contains("miner")) {
             String[] commandsChain = line.split(" ");
 
             try {
@@ -160,7 +160,7 @@ public class Main {
                 System.err.println("Unable to create new client...");
                 return;
             }
-        }
+        } else return;
         System.out.println("Command executed successfully");
 
     }
