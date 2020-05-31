@@ -7,7 +7,11 @@ import com.raijin.blockchain.transactions.exceptions.InvalidBalanceException;
 
 public class VirtualCoinBalance implements Balance {
 
-    private Coin balance = new VirtualCoin(0);
+    private Coin balance;
+
+    public VirtualCoinBalance() {
+        this.balance = new VirtualCoin(0);
+    }
 
     @Override
     public Coin getBalance() {

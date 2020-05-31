@@ -2,6 +2,8 @@ package com.raijin.blockchain.storage;
 
 import com.raijin.blockchain.messaging.Message;
 import com.raijin.blockchain.transactions.Client;
+import com.raijin.blockchain.transactions.currency.Coin;
+import com.raijin.blockchain.transactions.currency.VirtualCoin;
 
 import java.io.IOException;
 import java.util.*;
@@ -30,6 +32,8 @@ public class Blockchain {
     private static boolean validateHash(String rhash, String lhash) {
         return rhash.equals(lhash);
     }
+
+    private final Coin reward = new VirtualCoin(100);
 
     private Blockchain() {
         lastBlockId = 1;
@@ -115,6 +119,10 @@ public class Blockchain {
     public void createClient(Client author) {
         MessageClient cli = new MessageClient(author);
         activeClients.put(author, cli);
+    }
+
+    public void reward(Client cli) {
+        cli.getBalance().increase(reward);
     }
 
     private List<Message> verifySignature(Set<MessageClient> currentClients) {
