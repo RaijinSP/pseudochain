@@ -1,6 +1,5 @@
 package com.raijin.blockchain.transactions;
 
-
 import com.raijin.blockchain.transactions.currency.Coin;
 import com.raijin.blockchain.transactions.exceptions.InvalidBalanceException;
 

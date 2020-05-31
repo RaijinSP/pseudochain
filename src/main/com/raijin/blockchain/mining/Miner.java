@@ -25,6 +25,10 @@ public class Miner extends Thread {
         this.client = ClientFactory.getFactory().create(super.getName());
     }
 
+    public Client getClient() {
+        return this.client;
+    }
+
     @Override
     public void run() {
         for (int i = 0; i < blocks; i++) {
@@ -41,5 +45,13 @@ public class Miner extends Thread {
     @Override
     public long getId() {
         return super.getId();
+    }
+
+    @Override
+    public String toString() {
+        return "Miner{" +
+                "client=" + client.getName() +
+                ", blocks=" + blocks +
+                '}';
     }
 }

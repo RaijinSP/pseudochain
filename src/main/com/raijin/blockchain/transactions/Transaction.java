@@ -1,10 +1,7 @@
 package com.raijin.blockchain.transactions;
 
-
 import com.raijin.blockchain.transactions.currency.Coin;
 import com.raijin.blockchain.transactions.exceptions.InvalidBalanceException;
-
-import java.util.function.Function;
 
 public class Transaction {
 
@@ -26,8 +23,8 @@ public class Transaction {
     @Override
     public String toString() {
         return "Transaction{" +
-                "sender=" + sender +
-                ", receiver=" + receiver +
+                "sender=" + sender.getName() +
+                ", receiver=" + receiver.getName() +
                 ", coin=" + coin +
                 '}';
     }

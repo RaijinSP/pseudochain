@@ -13,7 +13,7 @@ public class Block implements Serializable {
 
     private long id;
 
-    private static int zeros = 0;
+    private static int zeros = 6;
 
     private final long minerId;
 
@@ -127,7 +127,7 @@ public class Block implements Serializable {
             if (timeStamp < 1000 + 1000 * zeros) {
                 zeros++;
                 modZ = "N was increased to " + zeros;
-            } else if (timeStamp > 20000 + 1000 * zeros) {
+            } else if (timeStamp > 4000 + 1000 * zeros) {
                 zeros--;
                 modZ = "N was decreased to " + zeros;
             } else {

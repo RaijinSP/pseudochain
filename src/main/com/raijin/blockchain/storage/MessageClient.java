@@ -25,15 +25,6 @@ public class MessageClient {
         this.client = author;
     }
 
-    protected void addMessage(String message) {
-        try {
-            Message m = MessageFactory.create(client.getName() + ": " + message, client.getKeyPath());
-            messages.add(m);
-        } catch (Exception x) {
-            System.err.println("Unable to create message...");
-        }
-    }
-
     public List<Message> verifyAndClear() {
 
         List<Message> verified = new ArrayList<>();
@@ -61,7 +52,7 @@ public class MessageClient {
         return this.messages;
     }
 
-    public void performTransaction(Client receiver, Coin coin) throws TransactionException {
+    synchronized void performTransaction(Client receiver, Coin coin) throws TransactionException {
 
         Transaction transaction = TransactionManager.MANAGER.manageTransaction(client, receiver, coin);
 
@@ -69,6 +60,8 @@ public class MessageClient {
         try {
             Message message = MessageFactory.create(transaction, client.getKeyPath());
             messages.add(message);
+            System.out.println("Transaction successfully submitted!");
+            System.out.println(new String(message.getMessage().get(Message.ORIGINAL)));
         } catch (Exception x) {
             //TODO - enable transaction cancellation if we came here
             System.err.println("Unable to create message for transaction...");

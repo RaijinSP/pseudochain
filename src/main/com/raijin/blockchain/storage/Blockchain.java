@@ -4,6 +4,7 @@ import com.raijin.blockchain.messaging.Message;
 import com.raijin.blockchain.transactions.Client;
 import com.raijin.blockchain.transactions.currency.Coin;
 import com.raijin.blockchain.transactions.currency.VirtualCoin;
+import com.raijin.blockchain.transactions.exceptions.TransactionException;
 
 import java.io.IOException;
 import java.util.*;
@@ -112,17 +113,27 @@ public class Blockchain {
         return b.getPrevHash().equals(prevHash);
     }
 
-    public void addMessage(Client author, String message) {
-        Objects.requireNonNull(activeClients.get(author)).addMessage(message);
-    }
-
-    public void createClient(Client author) {
+    public synchronized void createClient(Client author) {
         MessageClient cli = new MessageClient(author);
         activeClients.put(author, cli);
     }
 
+    public void executeTransaction(Client sender, Client receiver, int quantity) {
+        MessageClient mc = activeClients.get(sender);
+        try {
+            mc.performTransaction(receiver, new VirtualCoin(quantity));
+        } catch (TransactionException e) {
+            System.err.println("Unable to perform transaction...");
+        }
+    }
+
     public void reward(Client cli) {
+        System.out.println(cli.getName() + " gaines reward for mining!");
         cli.getBalance().increase(reward);
+    }
+
+    public void removeClient(Client cli) {
+        activeClients.remove(cli);
     }
 
     private List<Message> verifySignature(Set<MessageClient> currentClients) {

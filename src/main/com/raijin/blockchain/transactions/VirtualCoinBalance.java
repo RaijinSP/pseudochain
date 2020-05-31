@@ -28,4 +28,11 @@ public class VirtualCoinBalance implements Balance {
         if (diff.quantity() > balance.quantity()) throw new InvalidBalanceException("Operation cannot be completed: not enough currency!");
         balance = new VirtualCoin(balance.quantity() - diff.quantity());
     }
+
+    @Override
+    public String toString() {
+        return "VirtualCoinBalance{" +
+                "balance=" + balance +
+                '}';
+    }
 }

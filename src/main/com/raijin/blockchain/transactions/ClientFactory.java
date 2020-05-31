@@ -12,7 +12,12 @@ import java.util.Set;
 
 public class ClientFactory {
 
-    private static final String keyPathBase = "C:\\Users\\raiji\\OneDrive\\Рабочий стол\\blockchain\\";
+    private static String keyPathBase;
+
+    public static void setPath(String path) {
+        if (keyPathBase == null) keyPathBase = path;
+    }
+
     private static final ClientFactory factory = new ClientFactory();
 
     private final KeyPairGenerator generator;
