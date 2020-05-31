@@ -10,4 +10,13 @@ each client should be able to mine blocks, which will store data about transacti
 
 just run main method and follow instructions
 
+example of input
+
+create miner Tom 10
+create miner Anna 10
+create miner Ivan 10
+create client Policeman
+run
+
+
 no spring
